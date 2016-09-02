@@ -195,6 +195,113 @@
 
       <div class="body-wrap">
   
+    <article id="post-CS面向数据库编程总结" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/09/02/CS面向数据库编程总结/" class="article-date">
+  	<time datetime="2016-09-02T14:16:46.646Z" itemprop="datePublished">2016-09-02</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/09/02/CS面向数据库编程总结/">C/S面向数据库编程总结</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="历史"><a href="#历史" class="headerlink" title="历史"></a>历史</h1><p>在传统的C/S开发模式下,客户端往往需要承担数据库数据的显示和编辑任务.为了将S端的数据库的数据推送至C端, 通常的做法有两种：</p>
+<ul>
+<li>全面开放Mysql数据库接口</li>
+<li>C端和S端全面架设通信管道,负责数据库编辑</li>
+</ul>
+<p>上述两种方法均存在不同的弊端. </p>
+<h3 id="方案一分析"><a href="#方案一分析" class="headerlink" title="方案一分析"></a>方案一分析</h3><h4 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h4><ul>
+<li>由客户端直接访问数据,简单明了</li>
+<li>界面部分可以直接面向数据编程,耦合性低</li>
+</ul>
+<h4 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h4><ul>
+<li>服务器对数据库的访问限制失去控制权,无法对客户端角色控制</li>
+<li>数据库访问直接暴露于外网中,安全受到威胁</li>
+</ul>
+<h3 id="方案二分析"><a href="#方案二分析" class="headerlink" title="方案二分析"></a>方案二分析</h3><h4 id="优点-1"><a href="#优点-1" class="headerlink" title="优点"></a>优点</h4><ul>
+<li>保护数据库安全, 确保服务器对客户端拥有访问控制权限</li>
+</ul>
+<h4 id="缺点-1"><a href="#缺点-1" class="headerlink" title="缺点"></a>缺点</h4><ul>
+<li>界面数据库的显示对通信管道有着极大的依赖,一旦界面做出修改, 则管道和服务端均需要做出修改.耦合性较大</li>
+</ul>
+<h1 id="读写分离方案"><a href="#读写分离方案" class="headerlink" title="读写分离方案"></a>读写分离方案</h1><ul>
+<li>在Mysql中增加客户端只读用户,提供数据库查询功能,暴露出客户端需要访问的数据表</li>
+<li>对数据库的修改操作统一由 客户端和服务器之间建立的通道负责.管道负责将操作操作数据库sql 语句传输至服务器,由服务器用户负责对数据库进行修改</li>
+<li>服务器根据不同的用户角色,对客户端请求操作进行限制</li>
+</ul>
+<h4 id="优点-2"><a href="#优点-2" class="headerlink" title="优点"></a>优点</h4><ul>
+<li>将数据库读取的功能独立处理, 让客户端数据的显示不受C/S网络通道的限制</li>
+<li>将数据库的修改操作统一到一个接口中, 简化C/S网络通信,确保服务器对客户端的请求拥有权限限制</li>
+<li>减轻服务器的业务逻辑复杂度,将显示功能</li>
+<li>技术实现简单,门槛低</li>
+</ul>
+<h4 id="缺点-2"><a href="#缺点-2" class="headerlink" title="缺点"></a>缺点</h4><ul>
+<li>需要暴露部分数据库数据</li>
+<li>该方案并未将数据库的操作全部独立处理</li>
+<li>不适应多人分工合作</li>
+</ul>
+<h1 id="C-S-B-S-混合编程方案"><a href="#C-S-B-S-混合编程方案" class="headerlink" title="C/S B/S 混合编程方案"></a>C/S B/S 混合编程方案</h1><blockquote>
+<p>在本地客户端中嵌入Browser. 由Web部分负责处理数据库处理工作. 实现普通事件与数据库完全分离的操作.从而简化客户端的开发工作</p>
+</blockquote>
+<h3 id="优点-3"><a href="#优点-3" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>数据库操作完全分离,且保障了服务器对数据库管理权限</li>
+<li>能够有效的保护数据库安全</li>
+<li>适合多人分工合作</li>
+<li>极大简化的客户端的开发工作,能够有效弥补C/S,B/S开发过程各种的优缺点.取长补短</li>
+<li>统一Web和客户端的开发风格,实现界面代码复用</li>
+<li>统一web开发接口,简化开发流程</li>
+</ul>
+<h3 id="缺点-3"><a href="#缺点-3" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>技术复杂,门槛高, 需要使用到客户端内嵌webkit和后台web的技术支持</li>
+<li>客户端打包体积较大, 不利于客户端发行</li>
+</ul>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>读写分离方案使用小团队,小公司开发. 技术入门简单,客户端界面数据显示定制无需修改服务器. 短期内能够适合敏捷开发的需求</li>
+<li>B/S C/S混合开发目前已经成为主流大公司的首选技术标准（andriod首推）. 此类应用适用于长期与用户保持接触, 有着极高的用户活跃度和较大内容输出的场景</li>
+</ul>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="post-test" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
